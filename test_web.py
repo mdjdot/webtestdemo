@@ -41,18 +41,26 @@ def test_search_img():
     # 4. get the target search result and validate it
     target = int(config.get('CheckPoint', 'VISIT_RESULT'))
     img = driver.find_element_by_css_selector(
-        'div.graph-row.graph-same-list > div:nth-child(3) > div > a > div.graph-same-list-img > img')
+        'div.graph-row.graph-same-list > div:nth-child({0}) > div > a > div.graph-same-list-img > img'.format(target))
+    js4 = "arguments[0].scrollIntoView();"
+    driver.execute_script(js4, img)  
     img.screenshot('./tempfile/1.jpg')
 
     img1 = Image.open('./tempfile/1.jpg')
+    img1.thumbnail((128, 128))
     img2 = Image.open('./pythontab.jpg')
+
+
+
+    img2.thumbnail((128, 128))
     h1 = img1.histogram()
     h2 = img2.histogram()
 
     diff = math.sqrt(reduce(operator.add,  list(
         map(lambda a, b: (a-b)**2, h1, h2)))/len(h1))
     assert diff < 100
-
+    img1.close()
+    img2.close()
     # 5. quite the test application
     time.sleep(5)
     driver.quit()
